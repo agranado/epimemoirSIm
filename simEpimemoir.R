@@ -42,7 +42,7 @@ compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLe
                         recType="integrase",nIntegrases=2){
 
 
-  results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,alpha=alpha_,barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,nIntegrases = nIntegrases)
+  results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,nIntegrases = nIntegrases)
 
  #let's unlist the results from the parallel calculations:
   results_=list()
@@ -271,6 +271,7 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
   }else{
     allDistances[m+3] = 0
   }
+
 
 
 
