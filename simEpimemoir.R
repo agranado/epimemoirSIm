@@ -13,13 +13,13 @@ source("simulation4.R")
 source("additionalFunctions.R")
 source("cascadeFunctions.R")
 #MAIN REPOSITORY FOR RECONSTRUCTION
-source("/home/agranado/MEGA/Caltech/trees/lineageSoftware/MLfunctions.R")
+
 
 
 
 os=system("cat ../os.txt",intern = T) #Local Mac repository (laptop)
 if(os=="mac"){
-  git.path = "../GIT/"
+  git.path = "/Users/alejandrog/MEGA/Caltech/trees/GIT/"
 }else if(os =="linux"){ #local linux subsystem (maybe under Windows10)
   git.path = "/home/agranado/MEGA/Caltech/trees/lineageSoftware/"
 
@@ -39,10 +39,12 @@ rand.dist<-c(10,  26,  58, 120, 250, 506)
 nRepeats = 20
 # tHIS IS THE FUNCTION CURRENTLY CALLED BY bitVStrit.R
 compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLength=20,nRepeats=20,methods=c(),
-                        recType="integrase",nIntegrases=2){
+                        recType="integrase",nIntegrases=2,chr.acc=c()){
 
 
-  results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,nIntegrases = nIntegrases)
+  results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,
+      barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,
+        nIntegrases = nIntegrases,chr.acc=chr.acc)
 
  #let's unlist the results from the parallel calculations:
   results_=list()
@@ -274,7 +276,7 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
 #  allDistances[m+3]= RF.dist(removeSeqLabel(hclust.tree),trueTree)
 
   # CASCADE RECONSTRUCTION::::::::: Sep27
-  if(nIntegrases>1){
+  if(nIntegrases>1 & recType=="integrase"){
     r=cascadeReconstruction(barcodeLeaves,totalInts=nIntegrases,currentInts=1,nGen,mu,alpha)
     allDistances[m+3] = RF.dist(r,named.tree)
   }else{
