@@ -41,9 +41,14 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
     #insert mutation fuction for epimemoir (in the future should be the same)
     daughter$chr.acc <-thisNode$chr.acc
     daughter2$chr.acc <-thisNode$chr.acc #this is an array with the same length as the N of recording sites (channels)
+    as.numeric(strsplit(daughter$chr.acc,"_")[[1]])
+    as.numeric(strsplit(daughter2$chr.acc,"_")[[1]])
+    daughter$barcode <- mutationScratchpad(daughter$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts,as.numeric(strsplit(daughter$chr.acc,"_")[[1]]))
+    daughter2$barcode <- mutationScratchpad(daughter2$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts , as.numeric(strsplit(daughter2$chr.acc,"_")[[1]]))
 
-    daughter$barcode <- mutationScratchpad(daughter$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts,daughter$chr.acc)
-    daughter2$barcode <- mutationScratchpad(daughter2$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts , daughter2$chr.acc)
+    # Function for chromatin transitions:
+    #Same way as mutationScratchpad, we will transition between open and closed states with some probability
+
   }
 
   return(thisNode)

@@ -81,6 +81,9 @@ return(list(results.matrix,tree.list))
 #NOV 15th 2018 before thanksgiving break
 #Test stringdistance measures using the stringdist R library
 #use the same format as before but testing different methods included in the stringdist function
+
+#Nov20: the array chr.acc has as many elements as "chromatin" regions
+#the total lenght of the recording array will be divided evenly by the number of chromatin regions
 simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
                           simulationType='trit',recType="epimemoir",nIntegrases=4,chr.acc = c(0,0.3,0.6,1)){
   #load necessary libraries and functions
@@ -111,8 +114,10 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
     rm(firstCell)
   }
 
+ chr = paste(chr.acc,sep="",collapse="_")
+
  firstCell<-Node$new("1"); firstCell$barcode <-paste(rep("u",barcodeLength),collapse="");
- firstCell$chr.acc = chr.acc
+ firstCell$chr.acc = chr #store the array as numbers
   #all variables of the data.tree structure are global
   #any pointer to a node, points to the real tree.
 
@@ -130,6 +135,10 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
 #The idea is to divide the total number of generations between the N integrases:
 #So for 7 generation and 4 integrases we want a vector of activity = c(1,1,2,2,3,3,4)
 # cascadeActivation function takes care of this
+
+#this means that we want as many "channels" (integrases) as chromatin regions:
+if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
+
   act_time=cascadeActivation(nGen, nIntegrases)
 
 
