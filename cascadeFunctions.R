@@ -294,3 +294,23 @@ reconstruct.tree.list <-function(treelist,mu,nGen,alpha=1/2){
     }
     return(reconstructed.trees)
 }
+
+
+
+#plot two trees side by side, usually one tree is reconstruction and the other one is ground.truth
+compare.trees<-function(ground.truth,rec){
+
+    x11();
+    par(mfrow = c(1,2))
+
+    #rename with leave number
+    new.names = paste(names(ground.truth$tip.label),ground.truth$tip.label)
+    ground.truth$tip.label<-new.names
+    rec$tip.label <-new.names
+
+    plot.phylo(ground.truth,show.node.label=T)
+    plot(rec)
+
+
+
+}

@@ -24,6 +24,10 @@ switching.prs = c(0,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,0.9,1)
       ng=1
       mu=1
 
+#load dynamicData object for a particular combination of G/mu
+load("simdata/epiTest_gen_5_mu0.4_.rdata")
+#load dynamic trees object
+load("simdata/epiTest_gen_5_mu0.4_TREES.rdata")
 
 plot.all.heatmaps <-function(){
   for(mu in 1:length(mus)){
@@ -69,23 +73,4 @@ plot.all.heatmaps <-function(){
 
       }
     }
-}
-
-
-#plot two trees side by side, usually one tree is reconstruction and the other one is ground.truth
-compare.trees<-function(ground.truth,rec){
-
-    x11();
-    par(mfrow = c(1,2))
-
-    #rename with leave number
-    new.names = paste(names(ground.truth$tip.label),ground.truth$tip.label)
-    ground.truth$tip.label<-new.names
-    rec$tip.label <-new.names
-
-    plot.phylo(ground.truth,show.node.label=T)
-    plot(rec)
-
-
-
 }
