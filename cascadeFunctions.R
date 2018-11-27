@@ -169,7 +169,7 @@ library(RColorBrewer)
         # this.max = max(mat1) + 0.1*this.min
         #
 
-        how.manycolors = 8
+        how.manycolors = 5
          my_palette <-  colorRampPalette(brewer.pal(11,"Spectral"))(n = 3*how.manycolors-1)
          this.range = this.max-this.min
 

@@ -1,5 +1,6 @@
 
-
+library(gplots)
+source("cascadeFunctions.R")
 #just one barcode length
 generations = c(4,5,6)#,6)
 
@@ -25,9 +26,9 @@ switching.prs = c(0,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,0.9,1)
       mu=1
 
 #load dynamicData object for a particular combination of G/mu
-load("simdata/epiTest_gen_5_mu0.4_.rdata")
+#load("simdata/epiTest_gen_5_mu0.4_.rdata")
 #load dynamic trees object
-load("simdata/epiTest_gen_5_mu0.4_TREES.rdata")
+#load("simdata/epiTest_gen_5_mu0.4_TREES.rdata")
 
 plot.all.heatmaps <-function(){
   for(mu in 1:length(mus)){
