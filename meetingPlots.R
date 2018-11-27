@@ -2,14 +2,14 @@
 library(gplots)
 source("cascadeFunctions.R")
 #just one barcode length
-generations = c(4,5,6)#,6)
+generations = c(5,6)#,6)
 
 barcodes = c(12) #according to Amjad estimation
 integrases = c(1)
 
 #edit rate
 mus= c(0.4,0.6,0.8)#,0.8)
-
+mus = c(0.1,0.2,0.3)
 nRepeats =100
 
 plots.dir = "./plots/"
@@ -65,9 +65,9 @@ plot.all.heatmaps <-function(){
 
           pdf(paste( plots.dir,"heatmap_compare_G",toString(generations[ng]),"_mu",toString(mus[mu]),"_.pdf" ,sep=""))
           #heatmap.compare(mat.data,mat.data2)
-            heatmap.simple(mat.data,xlab="transition rate",ylab="dynamic range",this.min=this.min,this.max =this.max,
+            heatmap.simple(mat.data2,xlab="transition rate",ylab="dynamic range",this.min=this.min,this.max =this.max,
                         title = paste("Mat1 G = ",toString(generations[ng])," mu = ",toString(mus[mu]) ,sep=""))
-            heatmap.simple(mat.data2,xlab="transition rate",ylab="dynamic range",this.min=this.min,this.max = this.max,
+            heatmap.simple(mat.data,xlab="transition rate",ylab="dynamic range",this.min=this.min,this.max = this.max,
                         title = paste("Mat 2: G = ",toString(generations[ng])," mu = ",toString(mus[mu]) ,sep=""))
           dev.off()
 

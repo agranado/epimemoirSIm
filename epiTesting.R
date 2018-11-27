@@ -18,15 +18,15 @@ if(os=="mac"){
 
 
 #just one barcode length
-generations = c(4,5,6)#,6)
+generations = c(5,6)#,6)
 
 barcodes = c(12) #according to Amjad estimation
 integrases = c(1)
 
 #edit rate
-mus= c(0.4,0.6,0.8)#,0.8)
+mus= c(0.1,0.2,0.3)#,0.8)
 
-nRepeats =100
+nRepeats =60
 #its easier to assume that open regions will have max edit rate
 #also this value will be a combination of the actual edit rate and max-open accessibility
 
