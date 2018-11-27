@@ -1,3 +1,17 @@
+os=system("cat ../os.txt",intern = T) #Local Mac repository (laptop)
+if(os=="mac"){
+  git.path = "/Users/alejandrog/MEGA/Caltech/trees/GIT/"
+}else if(os =="linux"){ #local linux subsystem (maybe under Windows10)
+  git.path = "/home/agranado/MEGA/Caltech/trees/lineageSoftware/"
+
+}else if(os=="aws"){ #AMAZON cloud computing server
+
+  git.path="../lineageSoftware/"
+}
+
+
+#Load fucntions from the main GIT repository (lineageSoftware)
+source(paste(git.path,"MLfunctions.R",sep=""))
 
 
 # For a given number of generations and a given number of integrases (or recording mechanisms, gRNA etc)
@@ -144,18 +158,49 @@ cascadeReconstruction<-function(barcodeLeaves,totalInts,currentInts,nGen,mu,alph
 
 
 
+library(RColorBrewer)
 
+
+  heatmap.simple<-function(mat1,xlab="",ylab="",this.min, this.max,title=""){
+
+        # this.min =min(mat1)
+        # this.min = this.min- 0.1*this.min
+        #
+        # this.max = max(mat1) + 0.1*this.min
+        #
+
+        how.manycolors = 8
+         my_palette <-  colorRampPalette(brewer.pal(11,"Spectral"))(n = 3*how.manycolors-1)
+         this.range = this.max-this.min
+
+
+         # (optional) defines the color breaks manually for a "skewed" color transition
+         col_breaks = c(seq(this.min, this.min+0.33*this.range,length=how.manycolors),  # for red
+                        seq( this.min+0.34*this.range, this.min +  0.66*this.range,length=how.manycolors),           # for yellow
+                        seq(this.min + 0.67*this.range, this.min + 1*this.range,length=how.manycolors))
+        ##### WORKS: two heatmaps side by side
+
+
+        heatmap.2(mat1,trace='none',dendrogram='none',col=my_palette,breaks = col_breaks,Rowv=F,
+                  Colv=F,key=T,xlab = xlab, ylab =ylab,main = title,keysize=2)
+
+
+  }
 
   heatmap.compare<-function(mat1,mat2){
 
+    this.min =min(rbind(mat2,mat1))
+    this.min = this.min- 0.1*this.min
+
+    this.max = max(rbind(mat2,mat1)) + 0.1*this.min
 
 
      my_palette <-  colorRampPalette(brewer.pal(11,"Spectral"))(n = 299)
-
+     this.range = this.max-this.min
      # (optional) defines the color breaks manually for a "skewed" color transition
-     col_breaks = c(seq(0,0.33,length=100),  # for red
-                    seq(0.34,0.66,length=100),           # for yellow
-                    seq(0.67,1,length=100))
+     col_breaks = c(seq(this.min, this.min+0.33*this.range,length=100),  # for red
+                    seq( this.min+0.34*this.range, this.min +  0.66*this.range,length=100),           # for yellow
+                    seq(this.min + 0.67*this.range, this.min + 1*this.range,length=100))
     ##### WORKS: two heatmaps side by side
     library(gridGraphics)
     library(grid)
@@ -231,4 +276,21 @@ cascadeReconstruction<-function(barcodeLeaves,totalInts,currentInts,nGen,mu,alph
         matrices[[ca]] = distBitAll
       }
       return(matrices)
+}
+
+
+reconstruct.tree.list <-function(treelist,mu,nGen,alpha=1/2){
+    reconstructed.trees = list()
+    for(t in 1:length(treelist)){
+      this.tree = treelist[[t]]
+      barcodeLeaves=this.tree$tip.label
+
+      matdist_ = manualDistML(barcodeLeaves,mu,alpha,nGen)
+      colnames(matdist_)<-barcodeLeaves
+      hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
+      reconstructed.trees[[t]] = hclust.tree
+
+
+    }
+    return(reconstructed.trees)
 }

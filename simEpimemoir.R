@@ -39,12 +39,12 @@ rand.dist<-c(10,  26,  58, 120, 250, 506)
 nRepeats = 20
 # tHIS IS THE FUNCTION CURRENTLY CALLED BY bitVStrit.R
 compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLength=20,nRepeats=20,methods=c(),
-                        recType="integrase",nIntegrases=2,chr.acc=c()){
+                        recType="integrase",nIntegrases=2,chr.acc=c(),chr.unacc=c(),Pr_switch=1/8){
 
 
   results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,
       barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,
-        nIntegrases = nIntegrases,chr.acc=chr.acc)
+        nIntegrases = nIntegrases,chr.acc=chr.acc,chr.unacc = chr.unacc,Pr_switch=Pr_switch) #epimemoir parameters
 
  #let's unlist the results from the parallel calculations:
   results_=list()
@@ -87,7 +87,7 @@ return(list(results.matrix,tree.list))
 #Nov20: the array chr.acc has as many elements as "chromatin" regions
 #the total lenght of the recording array will be divided evenly by the number of chromatin regions
 simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
-                          simulationType='trit',recType="epimemoir",nIntegrases=4,chr.acc = c(0,0.3,0.6,1)){
+                          simulationType='trit',recType="epimemoir",nIntegrases=4,chr.acc = c(0.8),chr.unacc =c(0.1),Pr_switch =1/8){
   #load necessary libraries and functions
   #detection of OS
 
@@ -116,10 +116,19 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
     rm(firstCell)
   }
 
+#convert numeric vectors to string for the tree to work properly
  chr = paste(chr.acc,sep="",collapse="_")
+ chr.closed = paste(chr.unacc, sep="",collapse= "_")
+
+# # # # # # # # CELL OBJECT INIT
+ # # # # # # # #
 
  firstCell<-Node$new("1"); firstCell$barcode <-paste(rep("u",barcodeLength),collapse="");
- firstCell$chr.acc = chr #store the array as numbers
+# these number will multiply the basal edit rate
+ firstCell$chr.acc = chr # accesibility values for open state
+ firstCell$chr.closed = chr.closed #accessibility value for closed state
+
+ firstCell$epihistory="1" #initial state for the fouding cell of the colony
   #all variables of the data.tree structure are global
   #any pointer to a node, points to the real tree.
 
@@ -147,7 +156,7 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   for (g in 1:nGen){
     #this function simulates one generation of the tree
     actIntegrase = act_time[g]
-    divideCellRecursive2(firstCell,mu,alpha,type=simulationType,recType=recType,actIntegrase,nIntegrases)
+    divideCellRecursive2(firstCell,mu,alpha,type=simulationType,recType=recType,actIntegrase,nIntegrases,Pr_switch)
   }
 
   trueTree<-as.phylo.Node(firstCell)
@@ -255,7 +264,7 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   }
 
 
-  matdist_ = manualDistML(barcodeLeaves,mu,alpha,nGen)
+  matdist_ = manualDistML(barcodeLeaves,mu*(chr.acc+chr.unacc)/2,alpha,nGen)
   manualTree_ =upgma(as.dist(t(matdist_)))
   manualTree_$tip.label= treeUPGMA$tip.label
 
@@ -294,7 +303,7 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   #system(paste("rm ",fasIN,".bak",sep=""))
 
 
-  return(list(allDistances,named.tree))
+  return(list(allDistances,named.tree,firstCell))
 }
 #END of simulation function
 # # # # # # # # # #

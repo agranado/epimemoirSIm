@@ -12,7 +12,7 @@ library(data.tree)
 #it also duplicates the barcoded scratchpad from the parent cells
 #takes thisNode as input parameter
 #  thisNode <- Node$new("1")
-divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1){
+divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1,Pr_switch =1/8){
 
 
   x<-thisNode$levelName
@@ -39,12 +39,37 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
     # NEW SECTION EPIMEMOIR
   }else if( recType=="epimemoir"){
     #insert mutation fuction for epimemoir (in the future should be the same)
+    #open accesibility value (probability that site is accessible for recording enzyme)
     daughter$chr.acc <-thisNode$chr.acc
     daughter2$chr.acc <-thisNode$chr.acc #this is an array with the same length as the N of recording sites (channels)
+
+    #inherit the closed "accessibility" value
+    daughter$chr.closed<-thisNode$chr.closed
+    daughter2$chr.closed<-thisNode$chr.closed
+    #inherit the epigenetic history of the mother
+    daughter$epihistory  = thisNode$epihistory
+    daughter2$epihistory = thisNode$epihistory
+    #ADD the sate of chromating for the new generation: THIS WILL AFFECT THE RECORDING from the current generation
+    #So far works for 1 region only:
+  #  Pr_switch = 1/8
+    daughter$epihistory =  epigenticTransition(  daughter$epihistory,Pr_switch) #mutate and record te state in the history
+    daughter2$epihistory = epigenticTransition(  daughter2$epihistory,Pr_switch)
+    n.events = nchar(daughter$epihistory)
+    daughter.isopen = substr(daughter$epihistory,n.events,n.events) #extract the current (new)state
+    daughter2.isopen = substr(daughter2$epihistory,n.events,n.events)
+
+    #works only for 1 region !
+      #based on the array of state 100100101 (Nregions) etc we will generate a new arrac of chr.acc which will correspond to the Pr values of accessibility
+      #form 0.8_0.1_0.1_ (Nregions)
+      #These are strings:
+    if(daughter.isopen =="1") new.chr = daughter$chr.acc else new.chr =daughter$chr.closed
+
+    if(daughter2.isopen =="1") new2.chr = daughter2$chr.acc else new2.chr = daughter2$chr.closed
+
     as.numeric(strsplit(daughter$chr.acc,"_")[[1]])
     as.numeric(strsplit(daughter2$chr.acc,"_")[[1]])
-    daughter$barcode <- mutationScratchpad(daughter$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts,as.numeric(strsplit(daughter$chr.acc,"_")[[1]]))
-    daughter2$barcode <- mutationScratchpad(daughter2$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts , as.numeric(strsplit(daughter2$chr.acc,"_")[[1]]))
+    daughter$barcode <- mutationScratchpad(daughter$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts,as.numeric(strsplit(new.chr,"_")[[1]]))
+    daughter2$barcode <- mutationScratchpad(daughter2$barcode,mu,alpha,type,recType,cInts=0,tInts=tInts , as.numeric(strsplit(new2.chr,"_")[[1]]))
 
     # Function for chromatin transitions:
     #Same way as mutationScratchpad, we will transition between open and closed states with some probability
@@ -55,21 +80,39 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
 }
 
 
+epigenticTransition<-function(epihistory,Pr_switch){
+
+    char.history = strsplit(epihistory,"")[[1]]
+    switch_event<-runif(1,0,1)
+    last.event = char.history[length(char.history)]
+    if(switch_event<Pr_switch) if(last.event =="0") new.state ="1" else new.state="0" else new.state = last.event
+
+    updated.history =paste(paste(char.history,collapse=""),new.state,sep="")
+
+    return ( updated.history)
+}
+#
+# switch_epi<-function(pre.state){
+#     if(pre.state =="0") new.state ="1" else new.state="0"
+#
+#     return new.state
+# }
+
 #this function acts on a tree.
 #finds the depth of the tree and duplicates only at the leaf level
 #Effectively add one generation to the tree
-divideCellRecursive2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1){
+divideCellRecursive2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1,Pr_switch =1/8){
   #add Child function changes the tree permanently.
   #tree works as a global variable, all pointers represent same object
 
   #this function will add one generation to the three
   if(length(thisNode$children)==0){
     #the node is a leaf (or root)
-    divideCell2(thisNode,mu,alpha,type,recType,cInts,tInts)
+    divideCell2(thisNode,mu,alpha,type,recType,cInts,tInts,Pr_switch)
     #this works
   }else{
     for (i in 1:length(thisNode$children)){
-      divideCellRecursive2(thisNode$children[i][[1]],mu,alpha,type,recType,cInts,tInts)
+      divideCellRecursive2(thisNode$children[i][[1]],mu,alpha,type,recType,cInts,tInts,Pr_switch)
     }
 
   }
