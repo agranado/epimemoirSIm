@@ -58,11 +58,11 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
     daughter.isopen = substr(daughter$epihistory,n.events,n.events) #extract the current (new)state
     daughter2.isopen = substr(daughter2$epihistory,n.events,n.events)
 
-    #works only for 1 region !
+    #works only for 1 region ! ! # # # # # # # #
       #based on the array of state 100100101 (Nregions) etc we will generate a new arrac of chr.acc which will correspond to the Pr values of accessibility
       #form 0.8_0.1_0.1_ (Nregions)
       #These are strings:
-    if(daughter.isopen =="1") new.chr = daughter$chr.acc else new.chr =daughter$chr.closed
+    if(daughter.isopen =="1") new.chr = daughter$chr.acc else new.chr =daughter$chr.closed #this is the numeric value of chromatin rate (which is assigned after the transition)
 
     if(daughter2.isopen =="1") new2.chr = daughter2$chr.acc else new2.chr = daughter2$chr.closed
 
@@ -81,11 +81,17 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
 
 
 epigenticTransition<-function(epihistory,Pr_switch){
-
+    single.transition = 1
     char.history = strsplit(epihistory,"")[[1]]
     switch_event<-runif(1,0,1)
     last.event = char.history[length(char.history)]
-    if(switch_event<Pr_switch) if(last.event =="0") new.state ="1" else new.state="0" else new.state = last.event
+    #FOR SINGLE TRANSITIONS
+    #if all the previous states are the same, means that the transition is only allowed to happen once!
+    #if unique(char.history)>1 then a transition already happened in the past and we skip the rest of the function
+    if(single.transition) make.transition = length(unique(char.history)) else make.transition = 1 # if single transition is not a problem then always TRUE
+    #Either way make.transition MUST eq 1 for the expression to happen
+
+    if(make.transition==1 & switch_event<Pr_switch) if(last.event =="0") new.state ="1" else new.state="0" else new.state = last.event
 
     updated.history =paste(paste(char.history,collapse=""),new.state,sep="")
 

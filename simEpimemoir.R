@@ -49,9 +49,12 @@ compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLe
  #let's unlist the results from the parallel calculations:
   results_=list()
   tree.list = list()
+  first.cell.list = list()
+
   for(i in 1:length(results)){
     results_[[i]] =results[[i]][[1]]
     tree.list[[i]] = results[[i]][[2]]
+    first.cell.list[[i]] = results[[i]][[3]]
   } #this takes the first element of the results list which is the array with distance calculations
 
   #save the simulated trees to the hard drive
@@ -65,7 +68,7 @@ compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLe
   #Optional when only interested in the mean
   #apply(results.matrix,2,mean)
   # return(results.matrix)
-return(list(results.matrix,tree.list))
+return(list(results.matrix,tree.list,first.cell.list))
 
 
 }
