@@ -18,15 +18,15 @@ if(os=="mac"){
 
 
 #just one barcode length
-generations = c(5,6)#,6)
+generations = c(4,5,6)#,6)
 
-barcodes = c(12) #according to Amjad estimation
+barcodes = c(15) #according to Amjad estimation
 integrases = c(1)
 
 #edit rate
-mus= c(0.1,0.2,0.3)#,0.8)
+mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
 
-nRepeats =60
+nRepeats =100
 #its easier to assume that open regions will have max edit rate
 #also this value will be a combination of the actual edit rate and max-open accessibility
 
@@ -71,8 +71,8 @@ for(m in 1:length(mus)){
         dynamicData[[c]] = switchingData
         dynamicTrees[[c]]=switchingTrees
     }
-        save(dynamicData,file = paste("./simdata/epiTest_gen_",toString(generations[ng]),"_mu", toString(mus[m]) ,"_.rdata",sep=""))
-        save(dynamicTrees,file = paste("./simdata/epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_TREES.rdata",sep=""))
+        save(dynamicData,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu", toString(mus[m]) ,"_.rdata",sep=""))
+        save(dynamicTrees,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_TREES.rdata",sep=""))
 
         genData[[ng]] = dynamicData
   }
