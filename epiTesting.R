@@ -19,12 +19,15 @@ if(os=="mac"){
 
 #just one barcode length
 generations = c(4,5,6)#,6)
+#generaitons = c(4,5)
+#generations = c(5)
 
 barcodes = c(15) #according to Amjad estimation
 integrases = c(1)
 
 #edit rate
 mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
+#mus=c(0.2,0.3)
 
 nRepeats =100
 #its easier to assume that open regions will have max edit rate
@@ -32,6 +35,7 @@ nRepeats =100
 
 
 closed.vals = c(0,0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.5,0.6,0.7,0.9,1)
+closed.vals = c(0,0.001,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.9,1)
 open.vals = rep(1,length(closed.vals)) #open is always max
 #they will all map to a dynamic range: open.val / closed.val
 switching.prs = c(0,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,0.9,1)
@@ -67,6 +71,7 @@ for(m in 1:length(mus)){
 
 
         }
+        
           print(paste("sim: g=",toString(generations[ng])," mu",toString(mus[m])," BC=",toString(barcodes[b])," Open vals=",toString(closed.vals[c]),sep=""))
         dynamicData[[c]] = switchingData
         dynamicTrees[[c]]=switchingTrees

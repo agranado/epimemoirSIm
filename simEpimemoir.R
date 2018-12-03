@@ -25,7 +25,7 @@ if(os=="mac"){
 
 }else if(os=="aws"){ #AMAZON cloud computing server
 
-  git.path="../lineageSoftware/"
+  git.path="/home/ubuntu/alejandrog/Caltech/macbookBranch/lineageSoftware/"
 }
 
 
@@ -305,8 +305,9 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   }
   #system(paste("rm ",fasIN,".bak",sep=""))
 
+  epihistory= firstCell$Get("epihistory")
+  return(list(allDistances,named.tree,epihistory))
 
-  return(list(allDistances,named.tree,firstCell))
 }
 #END of simulation function
 # # # # # # # # # #
