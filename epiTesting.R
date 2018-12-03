@@ -84,7 +84,7 @@ for(m in 1:length(mus)){
     }
         save(dynamicData,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu", toString(mus[m]) ,"_.rdata",sep=""))
         save(dynamicTrees,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_TREES.rdata",sep=""))
-        save(dynamicTrees,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_EPI.rdata",sep=""))
+        save(dynamicHistories,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_EPI.rdata",sep=""))
 
         genData[[ng]] = dynamicData
   }
