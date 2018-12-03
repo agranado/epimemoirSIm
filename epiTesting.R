@@ -29,7 +29,7 @@ integrases = c(1)
 mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
 #mus=c(0.2,0.3)
 
-nRepeats =100
+nRepeats =10
 #its easier to assume that open regions will have max edit rate
 #also this value will be a combination of the actual edit rate and max-open accessibility
 
@@ -52,17 +52,22 @@ for(m in 1:length(mus)){
   for (ng in 1:length(generations)){
     dynamicData = list()
     dynamicTrees = list()
+    dynamicHistories = list()
+    # # # # # # # #
     mean.matrix=array(0,dim = c(length(open.vals),length(switching.prs)))
     mean.matrix2=array(0,dim = c(length(open.vals),length(switching.prs)))
 
     for(c in 1:length(open.vals)){
         switchingData = list()
         switchingTrees = list()
+        switchingHistories = list()
+        # # # # # # # # # # #
         for(s in 1:length(switching.prs)){
                 xxx=compareDist(nGen =generations[ng],chr.acc=open.vals[c],chr.unacc = closed.vals[c],
                                 barcodeLength =barcodes[b],nRepeat =nRepeats,recType="epimemoir",Pr_switch = switching.prs[s],mu = mus[m])
                 switchingData[[s]]= xxx[[1]]
                 switchingTrees[[s]]= xxx[[2]]
+                switchingHistories[[s]]= xxx[[3]] #these are the epigenetic histories in text format (needs to be parse)
 
                 mean.matrix[c,s] = apply(xxx[[1]],2,mean)[1]
                 mean.matrix2[c,s] =apply(xxx[[1]],2,mean)[2]
@@ -71,13 +76,15 @@ for(m in 1:length(mus)){
 
 
         }
-        
+
           print(paste("sim: g=",toString(generations[ng])," mu",toString(mus[m])," BC=",toString(barcodes[b])," Open vals=",toString(closed.vals[c]),sep=""))
         dynamicData[[c]] = switchingData
         dynamicTrees[[c]]=switchingTrees
+        dynamicHistories[[c]] = switchingHistories
     }
         save(dynamicData,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu", toString(mus[m]) ,"_.rdata",sep=""))
         save(dynamicTrees,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_TREES.rdata",sep=""))
+        save(dynamicTrees,file = paste("./simdata/singleTrans_epiTest_gen_",toString(generations[ng]),"_mu",toString(mus[m]),"_EPI.rdata",sep=""))
 
         genData[[ng]] = dynamicData
   }

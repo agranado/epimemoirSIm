@@ -1,36 +1,45 @@
 
 library(gplots)
 source("cascadeFunctions.R")
-#just one barcode length
-generations = c(5,6)#,6)
 
-barcodes = c(12) #according to Amjad estimation
+#plots for single transition epimemoir (fist analysis)
+plots.dir ="./plots/single/"
+
+#just one barcode length
+generations = c(4,5,6)#,6)
+#generaitons = c(4,5)
+#generations = c(5)
+
+barcodes = c(15) #according to Amjad estimation
 integrases = c(1)
 
 #edit rate
-mus= c(0.4,0.6,0.8)#,0.8)
-mus = c(0.1,0.2,0.3)
-nRepeats =100
+mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
+#mus=c(0.2,0.3)
 
-plots.dir = "./plots/"
+nRepeats =100
+#its easier to assume that open regions will have max edit rate
+#also this value will be a combination of the actual edit rate and max-open accessibility
+
 
 closed.vals = c(0,0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.5,0.6,0.7,0.9,1)
+closed.vals = c(0,0.001,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.9,1)
 open.vals = rep(1,length(closed.vals)) #open is always max
 #they will all map to a dynamic range: open.val / closed.val
 switching.prs = c(0,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,0.9,1)
 
-
-
-      max.rf =2^(generations+1)-6
-      ng=1
-      mu=1
+#constant parameters for now
+ng =1
+m = 1
+b=1
+max.rf =2^(generations+1)-6
 
 #load dynamicData object for a particular combination of G/mu
 #load("simdata/epiTest_gen_5_mu0.4_.rdata")
 #load dynamic trees object
 #load("simdata/epiTest_gen_5_mu0.4_TREES.rdata")
 
-plot.all.heatmaps <-function(){
+plot.all.heatmaps <-function(muVariation){
   for(mu in 1:length(mus)){
       for(ng in 1:length(generations)){
           dynamicData=muVariation[[mu]][[ng]]
@@ -105,4 +114,14 @@ compare.epi.memoir<-function(){
       }
      #hist(all.data[[2]],breaks=8,ylim=c(1,100),xlim=c(0.2,1),
       #  main="no transition",xlab ="reconstructability",col="cadetblue3",cex =2)
+}
+
+
+convert.epihistory<-function(){
+
+  
+
+
+
+
 }
