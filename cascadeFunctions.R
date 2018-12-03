@@ -6,7 +6,8 @@ if(os=="mac"){
 
 }else if(os=="aws"){ #AMAZON cloud computing server
 
-  git.path="../lineageSoftware/"
+  git.path="/home/ubuntu/alejandrog/Caltech/macbookBranch/lineageSoftware/"
+
 }
 
 
