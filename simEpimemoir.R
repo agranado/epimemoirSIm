@@ -305,8 +305,8 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   }
   #system(paste("rm ",fasIN,".bak",sep=""))
 
-
-  return(list(allDistances,named.tree,firstCell))
+  tree.data.frame= print(firstCell,"epihistory")
+  return(list(allDistances,named.tree,tree.data.frame))
 }
 #END of simulation function
 # # # # # # # # # #
