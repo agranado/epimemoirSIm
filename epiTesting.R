@@ -19,7 +19,7 @@ if(os=="mac"){
 
 #just one barcode length
 generations = c(4,5,6)#,6)
-#generaitons = c(4,5)
+generaitons = c(4,5)
 #generations = c(5)
 
 barcodes = c(15) #according to Amjad estimation
@@ -27,6 +27,7 @@ integrases = c(1)
 
 #edit rate
 mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
+mus =c(0.1)
 #mus=c(0.2,0.3)
 
 nRepeats =10

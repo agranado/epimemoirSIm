@@ -305,8 +305,16 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   }
   #system(paste("rm ",fasIN,".bak",sep=""))
 
-  epihistory= firstCell$Get("epihistory")
-  return(list(allDistances,named.tree,epihistory))
+
+  #here we save the epihistory as data.frame
+  #this has to be reconstructed into a tree later in the data analysis:
+
+  firstCell.df=ToDataFrameTree(firstCell,"pathString","barcode","epihistory")
+  #USE >n=FromDataFrameTable(firstCell.df)
+
+  #epihistory= firstCell$Get("epihistory")
+  return(list(allDistances,named.tree,firstCell.df))
+
 
 }
 #END of simulation function

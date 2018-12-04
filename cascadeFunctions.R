@@ -303,7 +303,7 @@ compare.trees<-function(ground.truth,rec){
 
     x11();
     par(mfrow = c(1,2))
-
+    par(family='mono')
     #rename with leave number
     new.names = paste(names(ground.truth$tip.label),ground.truth$tip.label)
     ground.truth$tip.label<-new.names
