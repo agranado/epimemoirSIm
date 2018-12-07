@@ -157,12 +157,9 @@ cascadeReconstruction<-function(barcodeLeaves,totalInts,currentInts,nGen,mu,alph
 
   }
 
-
-
 library(RColorBrewer)
 
-
-  heatmap.simple<-function(mat1,xlab="",ylab="",this.min, this.max,title=""){
+heatmap.simple<-function(mat1,xlab="",ylab="",this.min, this.max,title=""){
 
         # this.min =min(mat1)
         # this.min = this.min- 0.1*this.min
@@ -188,7 +185,7 @@ library(RColorBrewer)
 
   }
 
-  heatmap.compare<-function(mat1,mat2){
+heatmap.compare<-function(mat1,mat2){
 
     this.min =min(rbind(mat2,mat1))
     this.min = this.min- 0.1*this.min
@@ -231,7 +228,7 @@ library(RColorBrewer)
 
   }
 
-  single.integrase.reconstruction<-function(barcodeLeaves,nGen=4,mu=0.4,alpha=1/2){
+single.integrase.reconstruction<-function(barcodeLeaves,nGen=4,mu=0.4,alpha=1/2){
 
           matdist_ = manualDistML(barcodeLeaves,mu,alpha,nGen)
           colnames(matdist_)<-barcodeLeaves
@@ -279,7 +276,6 @@ library(RColorBrewer)
       return(matrices)
 }
 
-
 reconstruct.tree.list <-function(treelist,mu,nGen,alpha=1/2){
     reconstructed.trees = list()
     for(t in 1:length(treelist)){
@@ -296,7 +292,21 @@ reconstruct.tree.list <-function(treelist,mu,nGen,alpha=1/2){
     return(reconstructed.trees)
 }
 
+reconstruct.barcodes <-function(leaves.barcodes,mu,nGen,alpha=1/2){
+    #reconstructed.trees = list()
+    #for(t in 1:length(treelist)){
+  #    this.tree = treelist[[t]]
+  #    barcodeLeaves=this.tree$tip.label
 
+      matdist_ = manualDistML(leaves.barcodes,mu,alpha,nGen)
+      colnames(matdist_)<-leaves.barcode
+      hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
+  #    reconstructed.trees[[t]] = hclust.tree
+
+
+  #  }
+    return(hclust.tree)
+}
 
 #plot two trees side by side, usually one tree is reconstruction and the other one is ground.truth
 compare.trees<-function(ground.truth,rec){
@@ -315,3 +325,5 @@ compare.trees<-function(ground.truth,rec){
 
 
 }
+
+#epiMEMOIR

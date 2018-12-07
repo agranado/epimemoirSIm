@@ -6,6 +6,7 @@ source("cascadeFunctions.R")
 plots.dir ="./plots/single/"
 
 #just one barcode length
+#just one barcode length
 generations = c(4,5,6)#,6)
 #generaitons = c(4,5)
 #generations = c(5)
@@ -16,8 +17,9 @@ integrases = c(1)
 #edit rate
 mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
 #mus=c(0.2,0.3)
+#mus=c(0.1)
 
-nRepeats =100
+nRepeats =72
 #its easier to assume that open regions will have max edit rate
 #also this value will be a combination of the actual edit rate and max-open accessibility
 
@@ -116,12 +118,33 @@ compare.epi.memoir<-function(){
       #  main="no transition",xlab ="reconstructability",col="cadetblue3",cex =2)
 }
 
+#                               [[closed]][[switch.pr]]  
+epihistory_4_3_=dynamicHistories[[4]][[3]]
+nGen = 4
+convert.epihistory<-function(epihistory_4_3_, nGen){
 
-convert.epihistory<-function(){
+  #creates a list of data.tree Node objects
+  a=lapply(epihistory_4_3_,FromDataFrameTable)
 
-  
+  i= 1
+
+  epihistory=a[[i]]$Get("epihistory")
+  barcodes = a[[i]]$Get("barcode")
+  leavesID<-(length(epihistory)-2^nGen+1):length(epihistory)
+  nodesID <-1:(length(epihistory)-2^nGen)
+
+  leaves.history =epihistory[which(names(epihistory) %in% leavesID)]
+  leaves.barcode =barcodes[which(names(barcodes) %in% leavesID)]
+
+  nodes.history = epihistory[ which(names(epihistory) %in% nodesID  ) ]
+  nodes.barcode = barcodes[ which(names(barcodes) %in% nodesID  ) ]
+
+  #epigenetic tree
+  b.phylo = as.phylo.Node(a[[i]])
+  b.phylo$tip.label = leaves.history
+  b.phylo$node.label = nodes.history
 
 
 
-
+  x11();plot(b.phylo,show.node.label=T)
 }
