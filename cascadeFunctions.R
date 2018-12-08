@@ -326,4 +326,10 @@ compare.trees<-function(ground.truth,rec){
 
 }
 
-#epiMEMOIR
+#epiMEMOIRc
+clade.probability<-function(leaves.barcode,nGen,mu,alpha){
+    for(i in 1:length(leaves.barcode))
+      probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],Pr_s0,mu=0.3,alpha=1/2,nGen=4)))
+
+    return(probs)
+}
