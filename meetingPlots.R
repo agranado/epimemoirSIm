@@ -121,12 +121,15 @@ compare.epi.memoir<-function(){
 #                               [[closed]][[switch.pr]]
 epihistory_4_3_=dynamicHistories[[4]][[3]]
 nGen = 4  extract.main.clades(rec)[[1]]
-convert.epihistory<-function(epihistory_4_3_, nGen){
+
+
+
+
+convert.epihistory<-function(epihistory_4_3_, nGen,i){
 
   #creates a list of data.tree Node objects
   a=lapply(epihistory_4_3_,FromDataFrameTable)
 
-  i= 1
 
   epihistory=a[[i]]$Get("epihistory")
   barcodes = a[[i]]$Get("barcode")
@@ -141,12 +144,16 @@ convert.epihistory<-function(epihistory_4_3_, nGen){
 
   #epigenetic tree
   b.phylo = as.phylo.Node(a[[i]])
+  a.phylo = as.phylo.Node(a[[i]])
+
   b.phylo$tip.label = leaves.history
   b.phylo$node.label = nodes.history
 
+  a.phylo$tip.label = leaves.barcode
+  a.phylo$node.label= nodes.barcode
 
-
-  x11();plot(b.phylo,show.node.label=T)
+  #plot.phyl(b.phylo,show.nodes=T)
+  return(list(a.phylo,b.phylo))
 }
 
 
@@ -154,12 +161,15 @@ convert.epihistory<-function(epihistory_4_3_, nGen){
 
 #plot posterior Pr(x | mu for different mu's)
 #for a given clade, we can calculate the Pr of the whole clade for a given mu value
-mu.scan=c(0.01,0.05,0.1,0.15,0.20,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.9,0.95)
-prs=c()
-x_mul(2,2)
-for(t in 1:2){
-  this.clade=extract.main.clades(rec)[[t]]
-  for(m in 1:length(mu.scan))
-    prs[m]=sum(log(clade.probability(this.clade$tip.label,nGen=4,genON=1,mu1=0.3,mu2=mu.scan[m],1/2)))
-  plot(mu.scan,prs,ylim=c(-400,-200),type="o",lwd=2,ylab="log Pr", xlab="predited edit rate in clade")
+clade.edit.rate<-function(rec){
+  mu.scan=c(0.01,0.05,0.1,0.15,0.20,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.9,0.95)
+  prs=c()
+  x_mul(2,2)
+  for(t in 1:2){
+    this.clade=extract.main.clades(rec)[[t]]
+    for(m in 1:length(mu.scan))
+      prs[m]=sum(log(clade.probability(this.clade$tip.label,nGen=4,genON=1,mu1=0.3,mu2=mu.scan[m],1/2)))
+    plot(mu.scan,prs,ylim=c(-400,-200),type="o",lwd=2,ylab="log Pr", xlab="predited edit rate in clade")
+  }
+
 }
