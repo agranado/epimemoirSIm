@@ -327,9 +327,55 @@ compare.trees<-function(ground.truth,rec){
 }
 
 #epiMEMOIRc
-clade.probability<-function(leaves.barcode,nGen,mu,alpha){
-    for(i in 1:length(leaves.barcode))
-      probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],Pr_s0,mu=0.3,alpha=1/2,nGen=4)))
+# library dcGOR from biocLite
 
+extract.main.clades<-function(tree){
+  #the first edge connects the root with one of the main clades
+  #rec$edge[1,1] will ALWAYS point to the root
+  aa=dcSubtreeClade(tree,Children(tree,tree$edge[1,1])[1]  )
+  aa2=dcSubtreeClade(tree,Children(tree,tree$edge[1,1])[2]  )
+
+  return(list(aa,aa2))
+}
+
+clade.probability<-function(leaves.barcode,nGen,genON,mu1,mu2,alpha){
+    for(i in 1:length(leaves.barcode))
+      #probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],Pr_s0,mu=mu,alpha=alpha,nGen=nGen)))
+      probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],mixed.model.pr,nGen=nGen,genON=genON,mu1=mu1,mu2=mu2,alpha=alpha)))
     return(probs)
+
+}
+
+mixed.model.pr<-function(a,genON,nGen,mu1,mu2,alpha){
+
+
+    if(a=="u")
+      pr= Pr_noedit(genON,mu1) * Pr_noedit(nGen-genON,mu2)
+    else if(a=="r")
+      pr =Pr_edit(genON,mu1,alpha) + Pr_edit(nGen-genON,mu2,alpha)
+    else if(a=="x")
+      pr =Pr_edit(genON,mu1,1-alpha) + Pr_edit(nGen-genON,mu2,1-alpha)
+
+
+}
+
+
+#general function that override native R for plotting
+plot.phyl<-function(tree,show.nodes =F,main="",cex=1.5){
+  par(family='mono')
+  plot.phylo(tree,cex =cex,show.node.label = show.nodes,main = main,edge.width=3,font=2)
+
+}
+
+plot.all.subtrees<-function(rec){
+
+  subtree.list = subtrees(rec);x_mul(4,4);
+  for(i in 1:length(subtree.list)){
+    plot.phyl(subtree.list[[i]],
+      main =paste("depth =",toString(max(node.depth(subtree.list[[i]]))), " edge=",toString(dim(subtree.list[[i]]$edge)[1]) ,sep="" ) );
+  }
+}
+
+x_mul<-function(x,y){
+  x11();par(mfrow=c(x,y));
 }
