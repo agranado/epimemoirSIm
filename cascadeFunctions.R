@@ -238,7 +238,7 @@ single.integrase.reconstruction<-function(barcodeLeaves,nGen=4,mu=0.4,alpha=1/2)
 
   library(data.tree)
   library(phangorn)
-  reconstruct.list<-function(cascadevar.tree,integrases,barcodes,mus,generations,alpha=1/2){
+reconstruct.list<-function(cascadevar.tree,integrases,barcodes,mus,generations,alpha=1/2){
 
 
       matrices=list()
@@ -299,7 +299,7 @@ reconstruct.barcodes <-function(leaves.barcodes,mu,nGen,alpha=1/2){
   #    barcodeLeaves=this.tree$tip.label
 
       matdist_ = manualDistML(leaves.barcodes,mu,alpha,nGen)
-      colnames(matdist_)<-leaves.barcode
+      colnames(matdist_)<-leaves.barcodes
       hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
   #    reconstructed.trees[[t]] = hclust.tree
 

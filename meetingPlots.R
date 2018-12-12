@@ -119,8 +119,8 @@ compare.epi.memoir<-function(){
 }
 
 #                               [[closed]][[switch.pr]]
-epihistory_4_3_=dynamicHistories[[4]][[3]]
-nGen = 4  extract.main.clades(rec)[[1]]
+# epihistory_4_3_=dynamicHistories[[4]][[3]]
+# nGen = 4  extract.main.clades(rec)[[1]]
 
 
 
@@ -161,14 +161,17 @@ convert.epihistory<-function(epihistory_4_3_, nGen,i){
 
 #plot posterior Pr(x | mu for different mu's)
 #for a given clade, we can calculate the Pr of the whole clade for a given mu value
-clade.edit.rate<-function(rec){
+clade.edit.rate<-function(rec,depth,genON){
   mu.scan=c(0.01,0.05,0.1,0.15,0.20,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.9,0.95)
   prs=c()
-  x_mul(2,2)
+  #x_mul(2,2)
+  par(mfrow=c(2,2))
   for(t in 1:2){
     this.clade=extract.main.clades(rec)[[t]]
+    par(cex.axis=1.1,cex.lab = 1)
+    plot.phyl(this.clade,main =paste("clade",toString(t)),cex=1.3)
     for(m in 1:length(mu.scan))
-      prs[m]=sum(log(clade.probability(this.clade$tip.label,nGen=4,genON=1,mu1=0.3,mu2=mu.scan[m],1/2)))
+      prs[m]=sum(log(clade.probability(this.clade$tip.label,nGen=depth,genON=genON,mu1=0.3,mu2=mu.scan[m],1/2)))
     plot(mu.scan,prs,ylim=c(-400,-200),type="o",lwd=2,ylab="log Pr", xlab="predited edit rate in clade")
   }
 
