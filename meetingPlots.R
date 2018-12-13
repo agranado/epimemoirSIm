@@ -176,3 +176,21 @@ clade.edit.rate<-function(rec,depth,genON){
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##
