@@ -339,6 +339,7 @@ extract.main.clades<-function(tree){
 }
 
 clade.probability<-function(leaves.barcode,nGen,genON,mu1,mu2,alpha){
+    probs = c()
     for(i in 1:length(leaves.barcode))
       #probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],Pr_s0,mu=mu,alpha=alpha,nGen=nGen)))
       probs[i] = prod(unlist(lapply(strsplit(leaves.barcode[[i]],"")[[1]],mixed.model.pr,nGen=nGen,genON=genON,mu1=mu1,mu2=mu2,alpha=alpha)))
@@ -348,15 +349,18 @@ clade.probability<-function(leaves.barcode,nGen,genON,mu1,mu2,alpha){
 
 mixed.model.pr<-function(a,genON,nGen,mu1,mu2,alpha){
 
-
+  if(genON<nGen){
     if(a=="u")
       pr= Pr_noedit(genON,mu1) * Pr_noedit(nGen-genON,mu2)
     else if(a=="r")
       pr =Pr_edit(genON,mu1,alpha) + Pr_edit(nGen-genON,mu2,alpha)
     else if(a=="x")
       pr =Pr_edit(genON,mu1,1-alpha) + Pr_edit(nGen-genON,mu2,1-alpha)
+  }else if(genON==nGen){
+      pr = Pr_s0(a, mu1, alpha,nGen )
+    }
 
-
+  return(pr)
 }
 
 

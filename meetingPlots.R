@@ -174,10 +174,21 @@ clade.edit.rate<-function(rec,depth,genON){
       prs[m]=sum(log(clade.probability(this.clade$tip.label,nGen=depth,genON=genON,mu1=0.3,mu2=mu.scan[m],1/2)))
     plot(mu.scan,prs,ylim=c(-400,-200),type="o",lwd=2,ylab="log Pr", xlab="predited edit rate in clade")
   }
-
 }
 
+# Dec 13th
+#assuming only two possible edit rates, we want to calculate the probabilities for all possible histories
+# transition happen in G1, G2, ... or never happened, hopefully this will give us an estimate of the timing
 
+#depth is the total number of generations
+clade.history<-function(clade.barcodes, depth, mu1,mu2,alpha=1/2){
+ #the minimum generation at which transition can happen is G2
+  pr.history = list()
+  for (gen.tr in 2:depth) {
+    pr.history[[gen.tr]] = clade.probability(leaves.barcode =clade.barcodes,nGen = depth, genON = gen.tr, mu1,mu2,alpha)
+  }
+  return(pr.history)
+}
 
 
 
