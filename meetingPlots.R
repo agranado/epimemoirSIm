@@ -184,21 +184,47 @@ clade.edit.rate<-function(rec,depth,genON){
 clade.history<-function(clade.barcodes, depth, mu1,mu2,alpha=1/2){
  #the minimum generation at which transition can happen is G2
   pr.history = list()
-  for (gen.tr in 2:depth) {
+  for (gen.tr in 1:depth) {
     pr.history[[gen.tr]] = clade.probability(leaves.barcode =clade.barcodes,nGen = depth, genON = gen.tr, mu1,mu2,alpha)
   }
   return(pr.history)
 }
 
 
+# # # # # #
+ # # # # #
+# # # # # #
+ # # # # #  LAB MEETING
 
+#Characterization of trit recording using information theory
+steady.state.prs<-function(mu=0.4,alpha=1/2,gen.range=0:10){
+    cols = c("cadetblue4","coral3","darkred")
+    alphabet= c("u","r","x")
 
+    prs = matrix(0,length(alphabet),length(gen.range))
+    for(i in 1:length(alphabet)){
+      prs[i,] =unlist(lapply(gen.range,Pr_s0,a=alphabet[i],alpha=alpha  ,mu=mu))
+      if(i==1)
+        plot(prs[i,],type="o",lwd=3,xlab ="generations",ylab="Expected fraction",col=cols[i],ylim=c(0,1))
+      else
+        lines(prs[i,],type="o",lwd=3,col = cols[i])
+    }
 
+    return(prs)
+}
 
+shannon.entropy<-function(px){
+  px[px == 0]<-0.0000001
+  return(sum(-px *log2(px)))
+}
 
+plot.entropy<-function(mu = 0.3,alpha=1/2,gen.range=0:10){
 
+  recording.prs = steady.state.prs(mu=mu,alpha=alpha,gen.range=gen.range)
 
+  plot(apply(recording.prs,2,shannon.entropy),lwd=3,type="o",xlab ="N cell divisions",ylab="Entropy")
 
+}
 
 
 
