@@ -124,13 +124,26 @@ compare.epi.memoir<-function(){
 
 
 
+# execute this before
+#this functino directly parses the data after loading it wiht:
+# load("simdata/single...")
+history.list.ToDataFrameTree<-function(epihistory_4_3_){
+  a=lapply(epihistory_4_3_,FromDataFrameTable)
+  return(a)
+}
 
-convert.epihistory<-function(epihistory_4_3_, nGen,i){
+
+convert.epihistory<-function(a, nGen,i=0){
 
   #creates a list of data.tree Node objects
-  a=lapply(epihistory_4_3_,FromDataFrameTable)
+  #a=lapply(epihistory_4_3_,FromDataFrameTable)
+all.trees.epi = list()
+all.trees.barcode = list()
+
+if(i>0) which.trees = i else which.trees = 1:length(a)
 
 
+for(i in which.trees){
   epihistory=a[[i]]$Get("epihistory")
   barcodes = a[[i]]$Get("barcode")
   leavesID<-(length(epihistory)-2^nGen+1):length(epihistory)
@@ -152,8 +165,12 @@ convert.epihistory<-function(epihistory_4_3_, nGen,i){
   a.phylo$tip.label = leaves.barcode
   a.phylo$node.label= nodes.barcode
 
+  all.trees.epi[[i]] = b.phylo
+  all.trees.barcode[[i]] = a.phylo
+
+}
   #plot.phyl(b.phylo,show.nodes=T)
-  return(list(a.phylo,b.phylo))
+  return(list(all.trees.barcode,all.trees.epi))
 }
 
 
@@ -213,7 +230,7 @@ clade.heatmap<-function(this.tree,nGen){
 }
 
 #Dec 17th
-#I think I have an algortithm to call events 
+#I think I have an algortithm to call events
 # "simdata/singleTrans_epiTest_gen_4_mu0.4_EPI.rdata"
 
 # # # # # #
