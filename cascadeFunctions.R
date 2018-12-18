@@ -348,14 +348,14 @@ clade.probability<-function(leaves.barcode,nGen,genON,mu1,mu2,alpha){
 }
 
 mixed.model.pr<-function(a,genON,nGen,mu1,mu2,alpha){
-
+#Probs in mixed model add to 1
   if(genON<nGen){
     if(a=="u")
       pr= Pr_noedit(genON,mu1) * Pr_noedit(nGen-genON,mu2)
     else if(a=="r")
-      pr =Pr_edit(genON,mu1,alpha) + Pr_edit(nGen-genON,mu2,alpha)
+      pr =Pr_edit(genON,mu1,alpha) + Pr_edit(nGen-genON,mu2,alpha)*Pr_noedit(genON,mu1)
     else if(a=="x")
-      pr =Pr_edit(genON,mu1,1-alpha) + Pr_edit(nGen-genON,mu2,1-alpha)
+      pr =Pr_edit(genON,mu1,1-alpha) + Pr_edit(nGen-genON,mu2,1-alpha) *Pr_noedit(genON,mu1)
   }else if(genON==nGen){
       pr = Pr_s0(a, mu1, alpha,nGen )
     }

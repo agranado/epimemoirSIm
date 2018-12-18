@@ -44,15 +44,16 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
     daughter2$chr.acc <-thisNode$chr.acc #this is an array with the same length as the N of recording sites (channels)
 
     #inherit the closed "accessibility" value
-    daughter$chr.closed<-thisNode$chr.closed
+    daughter$chr.closed<-thisNode$chr.closed #string of numbers representing the modified edit rate sep="_"
     daughter2$chr.closed<-thisNode$chr.closed
     #inherit the epigenetic history of the mother
-    daughter$epihistory  = thisNode$epihistory
+    daughter$epihistory  = thisNode$epihistory #STring of 1's & 0's, sep=""
     daughter2$epihistory = thisNode$epihistory
     #ADD the sate of chromating for the new generation: THIS WILL AFFECT THE RECORDING from the current generation
     #So far works for 1 region only:
   #  Pr_switch = 1/8
-    daughter$epihistory =  epigenticTransition(  daughter$epihistory,Pr_switch) #mutate and record te state in the history
+  #  Two daughters at this point are statistically independent:
+    daughter$epihistory =  epigenticTransition(  daughter$epihistory,Pr_switch) #mutate and RECORD the state in the history
     daughter2$epihistory = epigenticTransition(  daughter2$epihistory,Pr_switch)
     n.events = nchar(daughter$epihistory)
     daughter.isopen = substr(daughter$epihistory,n.events,n.events) #extract the current (new)state

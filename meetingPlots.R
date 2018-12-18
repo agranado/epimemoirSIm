@@ -190,11 +190,38 @@ clade.history<-function(clade.barcodes, depth, mu1,mu2,alpha=1/2){
   return(pr.history)
 }
 
+clade.heatmap<-function(this.tree,nGen){
+
+  clade.his.a.phylo = clade.history(this.tree$tip.label,depth=4,mu1=0.4,mu2=0.04,alpha=1/2)
+
+  x11();
+  pr.matrix= t(do.call(rbind, clade.his.a.phylo))
+
+  #we use the last generation to normalize the matrix
+  #The null hypothesis that NO transition happen so the branches were editing at the same time (pON)
+  #in log matrix: x>1 means pON was more likely
+
+  log.matrix = log(pr.matrix)/log(pr.matrix[,nGen])
+  log.matrix[log.matrix<1] = -1/log.matrix[log.matrix<1]
+
+  #because the transition probability is low, most cells in the matrix will have x>1 meaning not transition
+  # log.matrix< -1.15
+
+  row.names(pr.matrix)<-paste(names(this.tree$tip.label),this.tree$tip.label)
+  heatmap.2(-log10(pr.matrix),trace="none",Colv = "none",Rowv = "none",dendrogram="none")
+  return(pr.matrix)
+}
+
+#Dec 17th
+#I think I have an algortithm to call events 
+# "simdata/singleTrans_epiTest_gen_4_mu0.4_EPI.rdata"
 
 # # # # # #
  # # # # #
 # # # # # #
  # # # # #  LAB MEETING
+
+
 
 #Characterization of trit recording using information theory
 steady.state.prs<-function(mu=0.4,alpha=1/2,gen.range=0:10){
