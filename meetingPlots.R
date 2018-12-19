@@ -7,12 +7,12 @@ plots.dir ="./plots/single/"
 
 #just one barcode length
 #just one barcode length
-generations = c(4,5,6)#,6)
+# generations = c(4,5,6)#,6)
 #generaitons = c(4,5)
 #generations = c(5)
 
-barcodes = c(15) #according to Amjad estimation
-integrases = c(1)
+# barcodes = c(15) #according to Amjad estimation
+# integrases = c(1)
 
 #edit rate
 mus= c(0.1,0.2,0.3,0.4,0.5,0.6)#,0.8)
@@ -31,11 +31,11 @@ open.vals = rep(1,length(closed.vals)) #open is always max
 switching.prs = c(0,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.8,0.9,1)
 
 #constant parameters for now
-ng =1
-m = 1
-b=1
-max.rf =2^(generations+1)-6
-
+# ng =1
+# m = 1
+# b=1
+# max.rf =2^(generations+1)-6
+#
 #load dynamicData object for a particular combination of G/mu
 #load("simdata/epiTest_gen_5_mu0.4_.rdata")
 #load dynamic trees object
@@ -127,48 +127,59 @@ compare.epi.memoir<-function(){
 # execute this before
 #this functino directly parses the data after loading it wiht:
 # load("simdata/single...")
+
+# RUN THIS first
+load.n.parse <-function(file,nGen, closed.vals,switching.pr){
+  epihistory_4_3 = load(file)
+  epihistory_4_3 = dynamicHistories[[closed.vals]][[switching.pr]]
+  epi.df = history.list.ToDataFrameTree(epihistory_4_3)
+  all.trees= convert.epihistory(epi.df,nGen=4)
+  return(all.trees)
+}
+#includes the following functions:
 history.list.ToDataFrameTree<-function(epihistory_4_3_){
   a=lapply(epihistory_4_3_,FromDataFrameTable)
   return(a)
 }
 
-
 convert.epihistory<-function(a, nGen,i=0){
+
+# up to here...
 
   #creates a list of data.tree Node objects
   #a=lapply(epihistory_4_3_,FromDataFrameTable)
-all.trees.epi = list()
-all.trees.barcode = list()
+  all.trees.epi = list()
+  all.trees.barcode = list()
 
-if(i>0) which.trees = i else which.trees = 1:length(a)
+  if(i>0) which.trees = i else which.trees = 1:length(a)
 
 
-for(i in which.trees){
-  epihistory=a[[i]]$Get("epihistory")
-  barcodes = a[[i]]$Get("barcode")
-  leavesID<-(length(epihistory)-2^nGen+1):length(epihistory)
-  nodesID <-1:(length(epihistory)-2^nGen)
+  for(i in which.trees){
+    epihistory=a[[i]]$Get("epihistory")
+    barcodes = a[[i]]$Get("barcode")
+    leavesID<-(length(epihistory)-2^nGen+1):length(epihistory)
+    nodesID <-1:(length(epihistory)-2^nGen)
 
-  leaves.history =epihistory[which(names(epihistory) %in% leavesID)]
-  leaves.barcode =barcodes[which(names(barcodes) %in% leavesID)]
+    leaves.history =epihistory[which(names(epihistory) %in% leavesID)]
+    leaves.barcode =barcodes[which(names(barcodes) %in% leavesID)]
 
-  nodes.history = epihistory[ which(names(epihistory) %in% nodesID  ) ]
-  nodes.barcode = barcodes[ which(names(barcodes) %in% nodesID  ) ]
+    nodes.history = epihistory[ which(names(epihistory) %in% nodesID  ) ]
+    nodes.barcode = barcodes[ which(names(barcodes) %in% nodesID  ) ]
 
-  #epigenetic tree
-  b.phylo = as.phylo.Node(a[[i]])
-  a.phylo = as.phylo.Node(a[[i]])
+    #epigenetic tree
+    b.phylo = as.phylo.Node(a[[i]])
+    a.phylo = as.phylo.Node(a[[i]])
 
-  b.phylo$tip.label = leaves.history
-  b.phylo$node.label = nodes.history
+    b.phylo$tip.label = leaves.history
+    b.phylo$node.label = nodes.history
 
-  a.phylo$tip.label = leaves.barcode
-  a.phylo$node.label= nodes.barcode
+    a.phylo$tip.label = leaves.barcode
+    a.phylo$node.label= nodes.barcode
 
-  all.trees.epi[[i]] = b.phylo
-  all.trees.barcode[[i]] = a.phylo
+    all.trees.epi[[i]] = b.phylo
+    all.trees.barcode[[i]] = a.phylo
 
-}
+  }
   #plot.phyl(b.phylo,show.nodes=T)
   return(list(all.trees.barcode,all.trees.epi))
 }
