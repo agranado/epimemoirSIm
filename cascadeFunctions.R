@@ -327,6 +327,9 @@ compare.trees<-function(ground.truth,rec){
 }
 
 #epiMEMOIRc
+# # # # # # # #
+ # # # # # # # #
+# # # # # # # # Jan 28th
 # library dcGOR from biocLite
 
 extract.main.clades<-function(tree){
@@ -347,8 +350,8 @@ clade.probability<-function(leaves.barcode,nGen,genON,mu1,mu2,alpha){
 
 }
 
-mixed.model.pr<-function(a,genON,nGen,mu1,mu2,alpha){
-#Probs in mixed model add to 1
+mixed.model.pr<-function(genON,a,nGen,mu1,mu2,alpha){
+  #Probs in mixed model add to 1
   if(genON<nGen){
     if(a=="u")
       pr= Pr_noedit(genON,mu1) * Pr_noedit(nGen-genON,mu2)
@@ -371,6 +374,7 @@ plot.phyl<-function(tree,show.nodes =F,main="",cex=1.5){
 
 }
 
+#take a reconstructed phylo tree and plot all subclades
 plot.all.subtrees<-function(rec){
 
   subtree.list = subtrees(rec);x_mul(4,4);

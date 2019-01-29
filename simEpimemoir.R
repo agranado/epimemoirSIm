@@ -227,7 +227,7 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   #We re-order the barcodes using a fixed (but random) order
   fastaBarcodes<-fastaBarcodes[rand.barcode.order]
   barcodeLeaves<-barcodeLeaves[rand.barcode.order]
-  write(fastaBarcodes,file=fasIN)
+  base::write(fastaBarcodes,file=fasIN) # dcGOR package overrides the write base method (which is stupid but that is they way it is)
 
 
 

@@ -93,14 +93,16 @@ compare.epi.memoir<-function(){
     par(mfrow=c(1,2))
     Pr_switch =c(1/7,0,1/8)
     mus = c(0.3,0.2,0.3)
+    alpha  = 0
+    nRepeats = 100
     all.data = list()
     for(j in 1:length(mus)){
 
-       b = compareDist(nGen=5,mu=mus[j],alpha=1/2,barcodeLength=12,chr.acc=1,chr.unacc = 0.2,Pr_switch = Pr_switch[j],nRepeats=200,recType="epimemoir")
-       mean.dist= 1-apply(a[[1]],2,mean)/ (2^5-6)
+       b = compareDist(nGen=5,mu=mus[j],alpha=alpha,barcodeLength=12,chr.acc=1,chr.unacc = 0.2,Pr_switch = Pr_switch[j],nRepeats=nRepeats,recType="epimemoir")
+       mean.dist= 1-apply(b[[1]],2,mean)/ (2^5-6)
        #[1] 0.6884615 0.7169231 1.0000000
        ground.truth =b[[2]]
-       rec=reconstruct.tree.list(ground.truth,mu=0.3,nGen=4,alpha=1/2)
+       rec=reconstruct.tree.list(ground.truth,mu=0.3,nGen=4,alpha=alpha)
        all.dist= c();
 
        for(i in 1:length(rec)){all.dist[i] = 1-RF.dist(rec[[i]],ground.truth[[i]],normalize = T)}
@@ -127,13 +129,15 @@ compare.epi.memoir<-function(){
 # execute this before
 #this functino directly parses the data after loading it wiht:
 # load("simdata/single...")
-
+library(data.tree)
+library(dcGOR)
 # RUN THIS first
 load.n.parse <-function(file,nGen, closed.vals,switching.pr){
   epihistory_4_3 = load(file)
+  #data was saved as a list of data.frames:
   epihistory_4_3 = dynamicHistories[[closed.vals]][[switching.pr]]
   epi.df = history.list.ToDataFrameTree(epihistory_4_3)
-  all.trees= convert.epihistory(epi.df,nGen=4)
+  all.trees= convert.epihistory(epi.df,nGen=nGen)
   return(all.trees)
 }
 #includes the following functions:
@@ -144,7 +148,7 @@ history.list.ToDataFrameTree<-function(epihistory_4_3_){
 
 convert.epihistory<-function(a, nGen,i=0){
 
-# up to here...
+  # up to here...
 
   #creates a list of data.tree Node objects
   #a=lapply(epihistory_4_3_,FromDataFrameTable)
@@ -218,9 +222,10 @@ clade.history<-function(clade.barcodes, depth, mu1,mu2,alpha=1/2){
   return(pr.history)
 }
 
+#by default we are making alpha = 0 for bit calculations. Epimemoir is bit-based recording
 clade.heatmap<-function(this.tree,nGen){
 
-  clade.his.a.phylo = clade.history(this.tree$tip.label,depth=4,mu1=0.4,mu2=0.04,alpha=1/2)
+  clade.his.a.phylo = clade.history(this.tree$tip.label,depth=nGen,mu1=0.4,mu2=0.04,alpha=0)
 
   x11();
   pr.matrix= t(do.call(rbind, clade.his.a.phylo))
@@ -234,9 +239,11 @@ clade.heatmap<-function(this.tree,nGen){
 
   #because the transition probability is low, most cells in the matrix will have x>1 meaning not transition
   # log.matrix< -1.15
+  my_palette <-  colorRampPalette(brewer.pal(11,"Spectral"))(n = 100)
 
   row.names(pr.matrix)<-paste(names(this.tree$tip.label),this.tree$tip.label)
-  heatmap.2(-log10(pr.matrix),trace="none",Colv = "none",Rowv = "none",dendrogram="none")
+  pheatmap(-log10(pr.matrix),trace="none",cluster_cols = F, cluster_rows = F,dendrogram="none",
+        col = my_palette,scale ="none",treeheight_row=0,treeheight_col = 0)
   return(pr.matrix)
 }
 
@@ -249,7 +256,7 @@ clade.heatmap<-function(this.tree,nGen){
 # # # # # #
  # # # # #  LAB MEETING
 
-
+# the following plots are not related to epimemoir
 
 #Characterization of trit recording using information theory
 steady.state.prs<-function(mu=0.4,alpha=1/2,gen.range=0:10){
