@@ -42,8 +42,8 @@ registerDoParallel(8)
 rand.dist<-c(10,  26,  58, 120, 250, 506)
 nRepeats = 20
 # tHIS IS THE FUNCTION CURRENTLY CALLED BY bitVStrit.R
-compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=1/2,barcodeLength=20,nRepeats=20,methods=c(),
-                        recType="integrase",nIntegrases=2,chr.acc=c(),chr.unacc=c(),Pr_switch=1/8){
+compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=0,barcodeLength=c(15,15),nRepeats=20,methods=c(),
+                        recType="epimemoir",nIntegrases=1,chr.acc=c(1,1),chr.unacc=c(0.9,0.2),Pr_switch=c(0,1/8)){
 
 
   results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,
@@ -86,16 +86,20 @@ return(list(results.matrix,tree.list,first.cell.list))
 
 
 
-nGen=3;mu=0.4;alpha=1/2;barcodeLength=40;methods=c();simulationType='trit';recType="epimemoir";nIntegrases=2;chr.acc = c(1); chr.unacc = c(0.2);Pr_switch =1/8
+nGen=3;mu=0.4;alpha=1/2;barcodeLength=c(20,15);methods=c();simulationType='trit';
+recType="epimemoir";nIntegrases=2;chr.acc = c(1,1); chr.unacc = c(1,0.2);Pr_switch =c(0,1/8)
 #NOV 15th 2018 before thanksgiving break
 #Test stringdistance measures using the stringdist R library
 #use the same format as before but testing different methods included in the stringdist function
 
 #Nov20: the array chr.acc has as many elements as "chromatin" regions
 #the total lenght of the recording array will be divided evenly by the number of chromatin regions
-simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=0,barcodeLength=40,methods=c(),
-                          simulationType='trit',recType="epimemoir",nIntegrases=4,
-                          chr.acc = c(0.8),chr.unacc =c(0.1),Pr_switch =1/8){
+#Jan 30: the array chr.acc hay multiple values, each for one region
+# chr.acc and chr.unacc must have the same length
+# Jan 30: Pr_switch, barcodeLength, chr.acc, chr.unacc   are ALL arrays, with N elements, where N is number of regions
+simMemoirStrdist<-function(nGen=4,mu=0.4,alpha=0,barcodeLength=10,methods=c(),
+                          simulationType='trit',recType="epimemoir",nIntegrases=1,
+                          chr.acc = c(0.8,0.8),chr.unacc =c(0.1,0.1),Pr_switch =c(0,1/8)){
   #load necessary libraries and functions
   #detection of OS
 
@@ -124,15 +128,30 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=0,barcodeLength=40,methods=c(),
     rm(firstCell)
   }
 
+
+
+   # # # # # # # # CELL OBJECT INIT
+   # # # # # # # #
+
  #convert numeric vectors to string for the tree to work properly
  chr = paste(chr.acc,sep="",collapse="_")
  chr.closed = paste(chr.unacc, sep="",collapse= "_")
 
- # # # # # # # # CELL OBJECT INIT
- # # # # # # # #
+ #prepare the barcodes for different regions bc.regions is an array of lengths
+ if(length(barcodeLength)==1) bc.regions = rep(barcodeLength,length(chr.acc)) else bc.regions = barcodeLength
 
+ #Jan 30th   Pr_switch will now be a new attribute of firstCell
+ if(length(Pr_switch)==1) switches = paste(rep(Pr_switch,length(chr.acc)),collapse="_") else switches = paste(Pr_switch,collapse="_")
+
+ #create cell object
  firstCell<-Node$new("1");
- firstCell$barcode <-paste(  rep(paste(rep("u",barcodeLength),collapse=""),length(chr.acc)),collapse="_")   ;
+
+
+ #replicate barcodes with same length
+  ## firstCell$barcode <-paste(  rep(paste(rep("u",barcodeLength),collapse=""),length(chr.acc)),collapse="_")   ;
+ #different length barcodes for each region:
+ firstCell$barcode<-do.call(paste,c(lapply(   lapply( bc.regions, rep, x="u"), paste, collapse=""),sep="_" )  )
+
  # these number will multiply the basal edit rate
  firstCell$chr.acc = chr # accesibility values for open state
  firstCell$chr.closed = chr.closed #accessibility value for closed state
@@ -141,25 +160,17 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=0,barcodeLength=40,methods=c(),
   #all variables of the data.tree structure are global
   #any pointer to a node, points to the real tree.
 
+  firstCell$switches = switches
+
   # SIMULATION
   # # # # # # # # #
    # # # # # # # #
   # # # # # # # # #
 
-   #Here we implment 3 recording systems: 4 intgrases using 40 barcodes/10 each ;  2 integrases using 40 barcodes/ 20 each; and a single array using 40 barcodes
-   # actIntegrase=1 # start recording using integrase 1
-    #nIntegrases =4 # how many integrases comprise the cascade
-   #1 is the first integrase (for nomal memoir , this is the only integrase)
-
-  #We need to assign a span of time (in generation units for each integrases to be active)
-  #The idea is to divide the total number of generations between the N integrases:
-  #So for 7 generation and 4 integrases we want a vector of activity = c(1,1,2,2,3,3,4)
-  # cascadeActivation function takes care of this
-
   #this means that we want as many "channels" (integrases) as chromatin regions:
-  #if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
+
   #if the recording type is epimemoir, the following line does nothing: nInterases=1, and act_time = c(1,1,1,...)
-  if(recType =="epimemoir") nIntegrases =1 #same thing as commented above since chr.acc is scalar Jan29th
+  if(recType =="epimemoir") nIntegrases =1
   act_time=cascadeActivation(nGen, nIntegrases)
 
 
@@ -214,107 +225,9 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=0,barcodeLength=40,methods=c(),
 
 
 
-  #now barcodeLeaves has all the leaves of the tree, with their original ID from the data.tree structure.
-  #create Fasta file using only the leaves of the tree (n= 2^g)
-  fastaBarcodes<-convertSimToFasta(barcodeLeaves)
-  #convert name of variable to string
-
-  #3  varName<-deparse(substitute(firstCell))
-
-  fasID =toString(runif(1))
-  #fasIN <-paste(pathName,"fasta/firstCell_",fasID,".fas",sep="")
-  fasIN =tempfile("fasta/firstCell",tmpdir = pathName2)
-  fasIN = paste(fasIN,fasID,".fas",sep="")
-
-  #randomize the barcodes such that order is not a factor in the lineage reconstruction
-  #the real tree (because the way is constructed, has an order 1,2,3,...N), if the barcodes are not
-  #randomized, the order will "help" to the reconstruction which is not good!
-  rand.barcode.order<-sample(1:length(fastaBarcodes))
-
-  #We re-order the barcodes using a fixed (but random) order
-  fastaBarcodes<-fastaBarcodes[rand.barcode.order]
-  barcodeLeaves<-barcodeLeaves[rand.barcode.order]
-  base::write(fastaBarcodes,file=fasIN) # dcGOR package overrides the write base method (which is stupid but that is they way it is)
 
 
-
-  sed.return<-convertMemoirToDNA(fasIN)
-  #now we can use the phyDat
-  if(sed.return){
-    memoirfas<-read.phyDat(fasIN,format="fasta",type="DNA")
-    #for distance based trees
-    #from the phangorn tutorial pdf:
-  }
-  #Apr 8th: this is where the distance comes into place
-
-  #Apr 8th:
-  #we calculate string distances only for the leaves ( which is the data we actually get)
-
-  allDistances = array()
-  # for(m in 1:length(methods)){
-  #   stringTree= upgma(stringdistmatrix(barcodeLeaves,method=methods[m]))
-  #   stringTree$tip.label<-trueTree$tip.label
-  #   allDistances[m]= RF.dist(stringTree,trueTree)
-  # }
-
-  #control against default dist.ml function + UPGMA, which so far is the best method
-  m=0
-  if(sed.return==1){
-    dm<-dist.ml(memoirfas)
-    dm.ham=dist.hamming(memoirfas)
-    if(simulationType=='binary'){
-      treeUPGMA<-upgma(dm.ham)
-    }else{
-      treeUPGMA<-upgma(dm)
-    }
-    treeUPGMA_noSeq<-removeSeqLabel(treeUPGMA)
-    allDistances[m+1]= RF.dist(treeUPGMA_noSeq,trueTree)
-  }else{
-    allDistances[m+1]= NaN
-  }
-
-
-  matdist_ = manualDistML(barcodeLeaves,mu*(chr.acc+chr.unacc)/2,alpha,nGen)
-  manualTree_ =upgma(as.dist(t(matdist_)))
-  manualTree_$tip.label= treeUPGMA$tip.label
-
-  allDistances[m+2]= RF.dist(removeSeqLabel(manualTree_),trueTree)
-
-  #try new distance using the built in dendrogram of heatmap2
-
-  #h=heatmap.2(matdist_+t(matdist_),trace="none",dendrogram = 'column')
-  # h=heatmap.2(matdist_+t(matdist_),Colv="Rowv")
-  # heatmap.tree=as.phylo(as.hclust(h$colDendrogram))
-  # heatmap.tree$tip.label = treeUPGMA$tip.label
-  # allDistances[m+3]= RF.dist(removeSeqLabel(heatmap.tree),trueTree)
-  #
-
-  #alternative w/o plotting the actual heatmap, only hclust method
-  #  hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
-  #  hclust.tree$tip.label = treeUPGMA$tip.label
-  #  allDistances[m+3]= RF.dist(removeSeqLabel(hclust.tree),trueTree)
-
-  # CASCADE RECONSTRUCTION::::::::: Sep27
-  if(nIntegrases>1 & recType=="integrase"){
-    r=cascadeReconstruction(barcodeLeaves,totalInts=nIntegrases,currentInts=1,nGen,mu,alpha)
-    allDistances[m+3] = RF.dist(r,named.tree)
-  }else{
-    allDistances[m+3] = 0
-  }
-
-
-
-
-  #system(paste("rm ",firstCellFile,sep=""))
-  if(sed.return){
-    system(paste("rm ",paste(fasIN,".bak",sep=""),sep=""))
-    system(paste("rm ",fasIN,sep=""))
-  }
-  #system(paste("rm ",fasIN,".bak",sep=""))
-
-
-  #here we save the epihistory as data.frame
-  #this has to be reconstructed into a tree later in the data analysis:
+  allDistances = array() # just to keep the indexes in the output consistent with further analysis
 
   firstCell.df=ToDataFrameTree(firstCell,"pathString","barcode","epihistory")
   #USE >n=FromDataFrameTable(firstCell.df)

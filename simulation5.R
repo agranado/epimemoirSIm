@@ -63,6 +63,7 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
         all.barcodes = strsplit(thisNode$barcode, "_")[[1]]
         all.chr.acc = strsplit( thisNode$chr.acc ,"_")[[1]]
         all.chr.closed = strsplit( thisNode$chr.closed ,"_")[[1]]
+        all.switches = strsplit( thisNode$switches,"_")[[1]]
 
         concat.histories =""
         concat.barcodes=""
@@ -74,9 +75,10 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
                   this.barcode = all.barcodes[regions]
                   this.chr.acc = all.chr.acc[regions]
                   this.chr.closed = all.chr.closed[regions]
+                  this.prswitch = all.switches[regions]
 
                   #is the transition happening ?:
-                  this.history =  epigenticTransition(  this.history,Pr_switch) #mutate and RECORD the state in the history
+                  this.history =  epigenticTransition(  this.history,as.numeric( this.prswitch )) #mutate and RECORD the state in the history
                   n.events = nchar(this.history)
                   daughter.isopen = substr(this.history,n.events,n.events) #extract the current (new)state
                   #what is the outcome of the transition? :
@@ -98,11 +100,13 @@ divideCell2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,
           concat.barcodes -> daughter$barcode
           thisNode$chr.acc -> daughter$chr.acc #take the original from the mother since this does not change during the simulation
           thisNode$chr.closed -> daughter$chr.closed #take the original from the mother since this does not change during the simulation
+          thisNode$switches -> daughter$switches
         }else{
           concat.histories ->daughter2$epihistory
           concat.barcodes -> daughter2$barcode
           thisNode$chr.acc -> daughter2$chr.acc #take the original from the mother since this does not change during the simulation
           thisNode$chr.closed -> daughter2$chr.closed #take the original from the mother since this does not change during the simulation
+          thisNode$switches -> daughter2$switches
         }
     } #FOR LOOP regions ENDS
 
