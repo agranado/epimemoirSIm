@@ -91,9 +91,9 @@ compare.epi.memoir<-function(){
 
     x11()
     par(mfrow=c(1,2))
-    Pr_switch =c(1/7,0,1/8)
+    Pr_switch =c(1/2,0,1/8)
     mus = c(0.3,0.2,0.3)
-    alpha  = 0
+    alpha  = 1/2
     nRepeats = 100
     all.data = list()
     for(j in 1:length(mus)){
@@ -102,7 +102,7 @@ compare.epi.memoir<-function(){
        mean.dist= 1-apply(b[[1]],2,mean)/ (2^5-6)
        #[1] 0.6884615 0.7169231 1.0000000
        ground.truth =b[[2]]
-       rec=reconstruct.tree.list(ground.truth,mu=0.3,nGen=4,alpha=alpha)
+       rec=reconstruct.tree.list(ground.truth,mu=0.3,nGen=nGen,alpha=alpha)
        all.dist= c();
 
        for(i in 1:length(rec)){all.dist[i] = 1-RF.dist(rec[[i]],ground.truth[[i]],normalize = T)}

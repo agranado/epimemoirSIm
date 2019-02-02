@@ -43,12 +43,12 @@ rand.dist<-c(10,  26,  58, 120, 250, 506)
 nRepeats = 20
 # tHIS IS THE FUNCTION CURRENTLY CALLED BY bitVStrit.R
 compareDist <- function(simulationType='trit',nGen=5,mu=0.3,alpha_=0,barcodeLength=c(15,15),nRepeats=20,methods=c(),
-                        recType="epimemoir",nIntegrases=1,chr.acc=c(1,1),chr.unacc=c(0.9,0.2),Pr_switch=c(0,1/8)){
+                        recType="epimemoir",nIntegrases=1,chr.acc=c(1,1),chr.unacc=c(1,0.2),Pr_switch=c(0,1/8)){
 
 
   results= foreach(i=1:nRepeats) %dopar% simMemoirStrdist(nGen=nGen,mu=mu,recType=recType,alpha=alpha_,
       barcodeLength=barcodeLength,methods=methods,simulationType=simulationType,
-        nIntegrases = nIntegrases,chr.acc=chr.acc,chr.unacc = chr.unacc,Pr_switch=Pr_switch) #epimemoir parameters
+        nIntegrases = nIntegrases,chr.acc=chr.acc,chr.unacc = chr.unacc,Pr_switch=Pr_switch) #epimemoir p,narameters
 
  #let's unlist the results from the parallel calculations:
   results_=list()
