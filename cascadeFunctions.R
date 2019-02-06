@@ -17,6 +17,7 @@ source(paste(git.path,"MLfunctions.R",sep=""))
 
 # For a given number of generations and a given number of integrases (or recording mechanisms, gRNA etc)
 # we need to indicate at which point in time (generation units), the next element will become active.
+# Jan 29th: Optimal partition of time in number of generations when a given N channels is used
 cascadeActivation<-function(nGen,nIntegrases){
     c( nGen %% nIntegrases,ceiling(nGen/nIntegrases),  nGen%/%nIntegrases)
     act_time =array()
@@ -238,6 +239,11 @@ single.integrase.reconstruction<-function(barcodeLeaves,nGen=4,mu=0.4,alpha=1/2)
 
   library(data.tree)
   library(phangorn)
+
+ #Useful functions for debugging and testing new things
+ # # # # # # # #
+  # # # # # # #
+
 reconstruct.list<-function(cascadevar.tree,integrases,barcodes,mus,generations,alpha=1/2){
 
 
@@ -326,7 +332,7 @@ compare.trees<-function(ground.truth,rec){
 
 }
 
-#epiMEMOIRc
+#epiMEMOIR functions
 # # # # # # # #
  # # # # # # # #
 # # # # # # # # Jan 28th

@@ -82,14 +82,14 @@ return(list(results.matrix,tree.list,first.cell.list))
 
 
 
-     nGen=3;mu=0.4;alpha=1/2;barcodeLength=40;methods=c();simulationType='trit';recType="epimemoir";nIntegrases=4;chr.acc = c(0,0.3,0.6,1)
+nGen=3;mu=0.4;alpha=1/2;barcodeLength=40;methods=c();simulationType='trit';recType="epimemoir";nIntegrases=4;chr.acc = c(0,0.3,0.6,1)
 #NOV 15th 2018 before thanksgiving break
 #Test stringdistance measures using the stringdist R library
 #use the same format as before but testing different methods included in the stringdist function
 
 #Nov20: the array chr.acc has as many elements as "chromatin" regions
 #the total lenght of the recording array will be divided evenly by the number of chromatin regions
-simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
+simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=0,barcodeLength=40,methods=c(),
                           simulationType='trit',recType="epimemoir",nIntegrases=4,chr.acc = c(0.8),chr.unacc =c(0.1),Pr_switch =1/8){
   #load necessary libraries and functions
   #detection of OS
@@ -119,15 +119,15 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
     rm(firstCell)
   }
 
-#convert numeric vectors to string for the tree to work properly
+ #convert numeric vectors to string for the tree to work properly
  chr = paste(chr.acc,sep="",collapse="_")
  chr.closed = paste(chr.unacc, sep="",collapse= "_")
 
-# # # # # # # # CELL OBJECT INIT
+ # # # # # # # # CELL OBJECT INIT
  # # # # # # # #
 
  firstCell<-Node$new("1"); firstCell$barcode <-paste(rep("u",barcodeLength),collapse="");
-# these number will multiply the basal edit rate
+ # these number will multiply the basal edit rate
  firstCell$chr.acc = chr # accesibility values for open state
  firstCell$chr.closed = chr.closed #accessibility value for closed state
 
@@ -135,26 +135,25 @@ simMemoirStrdist<-function(nGen=3,mu=0.4,alpha=1/2,barcodeLength=40,methods=c(),
   #all variables of the data.tree structure are global
   #any pointer to a node, points to the real tree.
 
-# SIMULATION
-# # # # # # # # #
- # # # # # # # #
-# # # # # # # # #
+  # SIMULATION
+  # # # # # # # # #
+   # # # # # # # #
+  # # # # # # # # #
 
- #Here we implment 3 recording systems: 4 intgrases using 40 barcodes/10 each ;  2 integrases using 40 barcodes/ 20 each; and a single array using 40 barcodes
- # actIntegrase=1 # start recording using integrase 1
-  #nIntegrases =4 # how many integrases comprise the cascade
- #1 is the first integrase (for nomal memoir , this is the only integrase)
+   #Here we implment 3 recording systems: 4 intgrases using 40 barcodes/10 each ;  2 integrases using 40 barcodes/ 20 each; and a single array using 40 barcodes
+   # actIntegrase=1 # start recording using integrase 1
+    #nIntegrases =4 # how many integrases comprise the cascade
+   #1 is the first integrase (for nomal memoir , this is the only integrase)
 
-#We need to assign a span of time (in generation units for each integrases to be active)
-#The idea is to divide the total number of generations between the N integrases:
-#So for 7 generation and 4 integrases we want a vector of activity = c(1,1,2,2,3,3,4)
-# cascadeActivation function takes care of this
+  #We need to assign a span of time (in generation units for each integrases to be active)
+  #The idea is to divide the total number of generations between the N integrases:
+  #So for 7 generation and 4 integrases we want a vector of activity = c(1,1,2,2,3,3,4)
+  # cascadeActivation function takes care of this
 
-#this means that we want as many "channels" (integrases) as chromatin regions:
-if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
+  #this means that we want as many "channels" (integrases) as chromatin regions:
+  if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
 
   act_time=cascadeActivation(nGen, nIntegrases)
-
 
   for (g in 1:nGen){
     #this function simulates one generation of the tree
@@ -283,9 +282,9 @@ if(recType=="epimemoir") if(length(chr.acc)>0) nIntegrases=length(chr.acc)
   #
 
   #alternative w/o plotting the actual heatmap, only hclust method
-#  hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
-#  hclust.tree$tip.label = treeUPGMA$tip.label
-#  allDistances[m+3]= RF.dist(removeSeqLabel(hclust.tree),trueTree)
+  #  hclust.tree=as.phylo(hclust(as.dist(t(matdist_))))
+  #  hclust.tree$tip.label = treeUPGMA$tip.label
+  #  allDistances[m+3]= RF.dist(removeSeqLabel(hclust.tree),trueTree)
 
   # CASCADE RECONSTRUCTION::::::::: Sep27
   if(nIntegrases>1 & recType=="integrase"){

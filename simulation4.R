@@ -2,10 +2,26 @@
 
 
 library(data.tree)
+#this function acts on a tree.
+#finds the depth of the tree and duplicates only at the leaf level
+#Effectively add one generation to the tree
+divideCellRecursive2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1,Pr_switch =1/8){
+  #add Child function changes the tree permanently.
+  #tree works as a global variable, all pointers represent same object
 
+  #this function will add one generation to the three
+  if(length(thisNode$children)==0){
+    #the node is a leaf (or root)
+    divideCell2(thisNode,mu,alpha,type,recType,cInts,tInts,Pr_switch)
+    #this works
+  }else{
+    for (i in 1:length(thisNode$children)){
+      divideCellRecursive2(thisNode$children[i][[1]],mu,alpha,type,recType,cInts,tInts,Pr_switch)
+    }
 
+  }
 
-
+}
 
 
 #this function creates a single cell-division event asumming constant division rate
@@ -104,27 +120,6 @@ epigenticTransition<-function(epihistory,Pr_switch){
 #
 #     return new.state
 # }
-
-#this function acts on a tree.
-#finds the depth of the tree and duplicates only at the leaf level
-#Effectively add one generation to the tree
-divideCellRecursive2<-function(thisNode,mu,alpha,type='trit',recType="integrase",cInts=1,tInts=1,Pr_switch =1/8){
-  #add Child function changes the tree permanently.
-  #tree works as a global variable, all pointers represent same object
-
-  #this function will add one generation to the three
-  if(length(thisNode$children)==0){
-    #the node is a leaf (or root)
-    divideCell2(thisNode,mu,alpha,type,recType,cInts,tInts,Pr_switch)
-    #this works
-  }else{
-    for (i in 1:length(thisNode$children)){
-      divideCellRecursive2(thisNode$children[i][[1]],mu,alpha,type,recType,cInts,tInts,Pr_switch)
-    }
-
-  }
-
-}
 
 
 #function to mutate the scratchpad (what memoir actually does)
@@ -237,10 +232,6 @@ recEpiMemoir<-function(a,mu,alpha,type,totalInts=1,chr.acc=c()){
 
   return(fullBarcode)
 }
-
-
-
-
 
 
 #OLD original backup: WORKS function to mutate the scratchpad (what memoir actually does)
